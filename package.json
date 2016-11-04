@@ -1,10 +1,13 @@
 {
   "name": "marked-directory",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Markdown to HTML conversion on directories using marked",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test rimraf ./test/docsBuild && node ./index.js ./test/docs/**/*.md ./test/docsBuild ./test/docs/ ./"
+    "test": "npm link && cross-env NODE_ENV=test rimraf ./test/docsBuild && marked-directory ./test/docs/**/*.md ./test/docsBuild ./test/docs/ ./ && npm unlink"
+  },
+  "bin": {
+    "marked-directory": "bin/marked-directory.js"
   },
   "repository": {
     "type": "git",
