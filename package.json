@@ -1,6 +1,6 @@
 {
   "name": "marked-directory",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Markdown to HTML conversion on directories using marked",
   "main": "index.js",
   "scripts": {
