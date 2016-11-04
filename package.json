@@ -1,0 +1,35 @@
+{
+  "name": "marked-directory",
+  "version": "0.0.1",
+  "description": "Markdown to HTML conversion on directories using marked",
+  "main": "index.js",
+  "scripts": {
+    "test": "cross-env NODE_ENV=test rimraf ./test/docsBuild && node ./index.js ./test/docs/**/*.md ./test/docsBuild ./test/docs/ ./"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SRSsoft/marked-directory.git"
+  },
+  "keywords": [
+    "markdown",
+    "directory",
+    "html",
+    "conversion",
+    "convert",
+    "folder"
+  ],
+  "author": "Brandon Boone <bboone@srssoft.com> (https://stackoverflow.com/cv/boone)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SRSsoft/marked-directory/issues"
+  },
+  "homepage": "https://github.com/SRSsoft/marked-directory#readme",
+  "dependencies": {
+    "marked": "^0.3.6",
+    "mkdirp": "^0.5.1"
+  },
+  "devDependencies": {
+    "cross-env": "^3.1.3",
+    "rimraf": "^2.5.4"
+  }
+}
