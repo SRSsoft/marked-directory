@@ -1,6 +1,6 @@
 {
   "name": "marked-directory",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Markdown to HTML conversion on directories using marked",
   "main": "index.js",
   "scripts": {
@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/SRSsoft/marked-directory#readme",
   "dependencies": {
+    "glob": "^7.1.1",
     "marked": "^0.3.6",
     "mkdirp": "^0.5.1"
   },
