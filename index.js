@@ -705,55 +705,54 @@ renderer.link = function link(paramHref, title, text) {
 marked.setOptions({ renderer });
 
 module.exports = ([input = '{./docs/**/*.md,./*.md}', output = './docsBuild', findOutputPath = '', repalceWith='']) =>
-    (new Promise((resolve, reject) =>
-        // find all target files
-        glob(input, (err, files) =>
-            (err ? reject(err) : resolve(files))
-        )
-    )).then(files => new Promise((resolve, reject) =>
+  (new Promise((resolve, reject) =>
+    // find all target files
+    glob(input, (err, files) =>
+      (err ? reject(err) : resolve(files))
+    )
+  )).then(files => new Promise((resolve, reject) =>
     // create target files directory
     mkdirp(output, (err) =>
-        (err ? reject(err) : resolve(files))
+      (err ? reject(err) : resolve(files))
     )
-    )).then(files =>
-        // iterate over target files
-        files.forEach(file => {
-            // get the current path of the target file
-            const curPath = path.resolve(file);
-            // create the destination path
-            // trim the sub directories if you don't want them'   
-            if(findOutputPath) {
-                //TODO: move regex out of loop since it never changes
-                file = file.replace(new RegExp(`^${findOutputPath}`), repalceWith);
-            }
+  )).then(files => new Promise((resolve, reject) =>
+    // iterate over target files
+    files.forEach(file => {
+      // get the current path of the target file
+      const curPath = path.resolve(file);
 
-            let newPath = path.resolve(path.join('./', output, file));
-            newPath = `${newPath.slice(0, -2)}htm`;
-            // create the destination directory path
-            const newDirPath = path.dirname(newPath);
+      // create the destination path
+      // trim the sub directories if you don't want them'   
+      if(findOutputPath) {
+        //TODO: move regex out of loop since it never changes
+        file = file.replace(new RegExp(`^${findOutputPath}`), repalceWith);
+      }
 
-            (new Promise((resolve, reject) =>
-            // read in target file contents
-            fs.readFile(curPath, 'utf8', (err, contents) =>
-                (err ? reject(err) : resolve(contents))
-            )
-            )).then(contents => new Promise((resolve, reject) =>
-            // create destination directory
-            mkdirp(newDirPath, (err) =>
-                (err ? reject(err) : resolve(contents))
-            )
-            )).then(contents =>
-            // write out target file to destination
-            fs.writeFile(
-                newPath,
-                // convert to htm and style
-                `<!DOCTYPE><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>${stylesheet}</style></head><body>${marked(contents)}</body></html>`,
-                { encoding: 'utf8' },
-                (err) => {
-                if (err) {
-                    console.error(err);
-                }
-                })
-            ).catch(err => console.error(err));
-        })
-    ).catch(err => console.error(err));
+      let newPath = path.resolve(path.join('./', output, file));
+      newPath = `${newPath.slice(0, -2)}htm`;
+      
+      // create the destination directory path
+      const newDirPath = path.dirname(newPath);
+
+      (new Promise((resolve, reject) =>
+        // read in target file contents
+        fs.readFile(curPath, 'utf8', (err, contents) =>
+          (err ? reject(err) : resolve(contents))
+        )
+      )).then(contents => new Promise((resolve, reject) =>
+        // create destination directory
+        mkdirp(newDirPath, (err) =>
+          (err ? reject(err) : resolve(contents))
+        )
+      )).then(contents => new Promise((resolve, reject) => 
+        // write out target file to destination
+        fs.writeFile(
+          newPath,
+          // convert to htm and style
+          `<!DOCTYPE><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>${stylesheet}</style></head><body>${marked(contents)}</body></html>`,
+          { encoding: 'utf8' },
+          (err) => (err ? reject(err) : resolve())
+        )
+      )).catch(err => (err ? reject(err) : resolve()));
+    })
+  )).catch(err => console.error(err));
