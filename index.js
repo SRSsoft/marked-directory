@@ -3,9 +3,6 @@ const path = require('path');
 const fs = require('fs');
 const glob = require('glob');
 const mkdirp = require('mkdirp');
-
-const [input = '{./docs/**/*.md,./*.md}', output = './docsBuild', findOutputPath = '', repalceWith=''] = process.argv.slice(2);
-
 const renderer = new marked.Renderer();
 
 /*eslint-disable*/
