@@ -750,6 +750,6 @@ module.exports = ([input = '{./docs/**/*.md,./*.md}', output = './docsBuild', fi
           { encoding: 'utf8' },
           (err) => (err ? reject(err) : resolve())
         )
-      )).catch(err => (err ? reject(err) : resolve()));
+      )).catch(err => reject(err));
     })
   )).catch(err => console.error(err));
