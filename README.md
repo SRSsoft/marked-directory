@@ -2,6 +2,7 @@
 
 [![NPM Version](https://img.shields.io/npm/v/marked-directory.svg?style=flat-square)](https://www.npmjs.com/package/marked-directory) 
 [![NPM Downloads](https://img.shields.io/npm/dm/marked-directory.svg?style=flat-square)](https://www.npmjs.com/package/marked-directory)
+[![Dependency Status](https://david-dm.org/srssoft/marked-directory.svg)](https://david-dm.org/srssoft/marked-directory)
 [![devDependency Status](https://david-dm.org/srssoft/marked-directory/dev-status.svg)](https://david-dm.org/srssoft/marked-directory#info=devDependencies)
 
 Markdown to HTML conversion on entire directories using [marked](https://www.npmjs.com/package/marked)

@@ -6,6 +6,7 @@ const mkdirp = require('mkdirp');
 
 const renderer = new marked.Renderer();
 
+// TODO: Move to an external stylesheet
 /*eslint-disable*/
 const stylesheet = `
 @font-face {
@@ -702,7 +703,51 @@ renderer.link = function link(paramHref, title, text) {
 // update to use our renderer
 marked.setOptions({ renderer });
 
-module.exports = ([input = '{./docs/**/*.md,./*.md}', output = './docsBuild', findOutputPath = '', repalceWith = '']) =>
+const processFiles = (files, findOutputPath, replaceWith, output) => {
+  let returnChain = Promise.resolve();
+
+  files.forEach((file) => {
+    // get the current path of the target file
+    const curPath = path.resolve(file);
+    let finalPath = file;
+    // create the destination path
+    // trim the sub directories if you don't want them'
+    if (findOutputPath) {
+      // TODO: move regex out of loop since it never changes
+      finalPath = file.replace(new RegExp(`^${findOutputPath}`), replaceWith);
+    }
+
+    let newPath = path.resolve(path.join('./', output, finalPath));
+    newPath = `${newPath.slice(0, -2)}htm`;
+
+    // create the destination directory path
+    const newDirPath = path.dirname(newPath);
+
+    returnChain = returnChain.then(() => new Promise((resolve, reject) =>
+      // read in target file contents
+      fs.readFile(curPath, 'utf8', (err, contents) =>
+        (err ? reject(err) : resolve(contents))
+      )
+    )).then(contents => new Promise((resolve, reject) =>
+      // create destination directory
+      mkdirp(newDirPath, err =>
+        (err ? reject(err) : resolve(contents))
+      )
+    )).then(contents => new Promise((resolve, reject) =>
+      // write out target file to destination
+      fs.writeFile(
+        newPath,
+        // convert to htm and style
+        `<!DOCTYPE><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>${stylesheet}</style></head><body>${marked(contents)}</body></html>`,
+        { encoding: 'utf8' },
+        err => (err ? reject(err) : resolve())
+      )
+    ));
+  });
+  return returnChain;
+};
+
+module.exports = ([input = '{./docs/**/*.md,./*.md}', output = './docsBuild', findOutputPath = '', replaceWith = '']) =>
   (new Promise((resolve, reject) =>
     // find all target files
     glob(input, (err, files) =>
@@ -713,44 +758,5 @@ module.exports = ([input = '{./docs/**/*.md,./*.md}', output = './docsBuild', fi
     mkdirp(output, err =>
       (err ? reject(err) : resolve(files))
     )
-  )).then(files => new Promise((finalResolve, finalReject) =>
-    // iterate over target files
-    files.forEach((file) => {
-      // get the current path of the target file
-      const curPath = path.resolve(file);
-      let finalPath = file;
-      // create the destination path
-      // trim the sub directories if you don't want them'
-      if (findOutputPath) {
-        // TODO: move regex out of loop since it never changes
-        finalPath = file.replace(new RegExp(`^${findOutputPath}`), repalceWith);
-      }
-
-      let newPath = path.resolve(path.join('./', output, finalPath));
-      newPath = `${newPath.slice(0, -2)}htm`;
-
-      // create the destination directory path
-      const newDirPath = path.dirname(newPath);
-
-      (new Promise((resolve, reject) =>
-        // read in target file contents
-        fs.readFile(curPath, 'utf8', (err, contents) =>
-          (err ? reject(err) : resolve(contents))
-        )
-      )).then(contents => new Promise((resolve, reject) =>
-        // create destination directory
-        mkdirp(newDirPath, err =>
-          (err ? reject(err) : resolve(contents))
-        )
-      )).then(contents => new Promise((resolve, reject) =>
-        // write out target file to destination
-        fs.writeFile(
-          newPath,
-          // convert to htm and style
-          `<!DOCTYPE><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>${stylesheet}</style></head><body>${marked(contents)}</body></html>`,
-          { encoding: 'utf8' },
-          err => (err ? reject(err) : resolve())
-        )
-      )).catch(err => finalReject(err));
-    })
-  )).catch(err => console.error(err)); // eslint-disable-line no-console
+  )).then(files => processFiles(files, findOutputPath, replaceWith, output)
+  ).catch(err => console.error(err)); // eslint-disable-line no-console
