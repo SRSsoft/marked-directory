@@ -1,3 +1,4 @@
 .eslint*
 .npmignore
 test
+.coveralls.yml
