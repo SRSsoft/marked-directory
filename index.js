@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const glob = require('glob');
 const mkdirp = require('mkdirp');
+
 const renderer = new marked.Renderer();
 
 /*eslint-disable*/
@@ -701,7 +702,7 @@ renderer.link = function link(paramHref, title, text) {
 // update to use our renderer
 marked.setOptions({ renderer });
 
-module.exports = ([input = '{./docs/**/*.md,./*.md}', output = './docsBuild', findOutputPath = '', repalceWith='']) =>
+module.exports = ([input = '{./docs/**/*.md,./*.md}', output = './docsBuild', findOutputPath = '', repalceWith = '']) =>
   (new Promise((resolve, reject) =>
     // find all target files
     glob(input, (err, files) =>
@@ -709,25 +710,25 @@ module.exports = ([input = '{./docs/**/*.md,./*.md}', output = './docsBuild', fi
     )
   )).then(files => new Promise((resolve, reject) =>
     // create target files directory
-    mkdirp(output, (err) =>
+    mkdirp(output, err =>
       (err ? reject(err) : resolve(files))
     )
-  )).then(files => new Promise((resolve, reject) =>
+  )).then(files => new Promise((finalResolve, finalReject) =>
     // iterate over target files
-    files.forEach(file => {
+    files.forEach((file) => {
       // get the current path of the target file
       const curPath = path.resolve(file);
-
+      let finalPath = file;
       // create the destination path
-      // trim the sub directories if you don't want them'   
-      if(findOutputPath) {
-        //TODO: move regex out of loop since it never changes
-        file = file.replace(new RegExp(`^${findOutputPath}`), repalceWith);
+      // trim the sub directories if you don't want them'
+      if (findOutputPath) {
+        // TODO: move regex out of loop since it never changes
+        finalPath = file.replace(new RegExp(`^${findOutputPath}`), repalceWith);
       }
 
-      let newPath = path.resolve(path.join('./', output, file));
+      let newPath = path.resolve(path.join('./', output, finalPath));
       newPath = `${newPath.slice(0, -2)}htm`;
-      
+
       // create the destination directory path
       const newDirPath = path.dirname(newPath);
 
@@ -738,18 +739,18 @@ module.exports = ([input = '{./docs/**/*.md,./*.md}', output = './docsBuild', fi
         )
       )).then(contents => new Promise((resolve, reject) =>
         // create destination directory
-        mkdirp(newDirPath, (err) =>
+        mkdirp(newDirPath, err =>
           (err ? reject(err) : resolve(contents))
         )
-      )).then(contents => new Promise((resolve, reject) => 
+      )).then(contents => new Promise((resolve, reject) =>
         // write out target file to destination
         fs.writeFile(
           newPath,
           // convert to htm and style
           `<!DOCTYPE><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>${stylesheet}</style></head><body>${marked(contents)}</body></html>`,
           { encoding: 'utf8' },
-          (err) => (err ? reject(err) : resolve())
+          err => (err ? reject(err) : resolve())
         )
-      )).catch(err => reject(err));
+      )).catch(err => finalReject(err));
     })
-  )).catch(err => console.error(err));
+  )).catch(err => console.error(err)); // eslint-disable-line no-console

@@ -24,7 +24,7 @@ Markdown to HTML conversion on entire directories using [marked](https://www.npm
 
 ```
 "scripts": {
-    "buildDocs": "marked-directory ./test/docs/**/*.md ./test/docsBuild ./test/docs/ ./"
+    "buildDocs": "marked-directory './test/docs/**/*.md' './test/docsBuild' './test/docs/' './'"
 }
 ```
 
