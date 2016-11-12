@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+/* eslint-disable no-undef,no-console */
 const expect = require('expect');
 const md = require('../index.js');
 const dirTree = require('directory-tree');
@@ -13,6 +13,17 @@ describe('marked-directory', () => {
       done();
     })
   );
+
+  it('should fail', () => {
+    // mock the console to test
+    let lastMsg = null;
+
+    const logger = (msg) => { lastMsg = msg; };
+
+    return md(['./test/docs/**/*.md', -1], { logger }).then(() => {
+      expect(lastMsg).toEqual(new TypeError('Path must be a string. Received -1'));
+    });
+  });
 
   it('should transform a directory', () =>
     md(['./test/docs/**/*.md', './test/docsBuild']).then(() => {
@@ -32,7 +43,7 @@ describe('marked-directory', () => {
                   {
                     path: 'test/docsBuild/test/docs/README.htm',
                     name: 'README.htm',
-                    size: 10671,
+                    size: 10699,
                     extension: '.htm',
                   },
                   {
@@ -55,16 +66,17 @@ describe('marked-directory', () => {
                     size: 21070,
                   },
                 ],
-                size: 31741,
+                size: 31769,
               },
             ],
-            size: 31741,
+            size: 31769,
           },
         ],
-        size: 31741,
+        size: 31769,
       });
     })
   );
+
 
   it('should transform a directory and remove unnecessary sub directories', () =>
     md(['./test/docs/**/*.md', './test/docsBuild', './test/docs', './']).then(() => {
@@ -76,7 +88,7 @@ describe('marked-directory', () => {
           {
             path: 'test/docsBuild/README.htm',
             name: 'README.htm',
-            size: 10671,
+            size: 10699,
             extension: '.htm',
           },
           {
@@ -99,7 +111,7 @@ describe('marked-directory', () => {
             size: 21070,
           },
         ],
-        size: 31741,
+        size: 31769,
       });
     })
   );
