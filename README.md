@@ -9,30 +9,64 @@
 
 Markdown to HTML conversion on entire directories using [marked](https://www.npmjs.com/package/marked)
 
-## Add to your project
+## Installation
+
+### Add to your project locally
 
 ```
-    npm install marked-directory --save-dev 
+npm install marked-directory --save-dev 
 ```
 
-## Add to npm scripts
+### Or add it globally
 
 ```
-"scripts": {
-    "buildDocs": "marked-directory [glob to markdown files] [output directory] [path searchValue to replace] [path newValue if found by previous arg]"
-}
+npm install -g marked-directory
 ```
+
+## Usage
 
 ### Example
 
 ```
-"scripts": {
-    "buildDocs": "marked-directory './test/docs/**/*.md' './test/docsBuild' './test/docs/' './'"
-}
+const md = require('marked-directory');
+
+// returns a promise
+md([
+    './test/docs/**/*.md', 
+    './test/docsBuild',
+    './test/docs/',
+    './'
+]).then(() => console.log('done'));
 ```
 
-## Command Line
+### Options
 
 ```
-npm run buildDocs
+md(
+    [
+        './test/docs/**/*.md', // Glob pattern to find files
+        './test/docsBuild', // Path to output rendered files
+        './test/docs/', // (optional) SearchValue to find in destination paths
+        './' // (optional) Replacement value if the above SearchValue is found
+    ], {
+        logger, // default logging is console.log
+        markedOptions // override marked options
+    }
+);
+
 ```
+
+## CLI
+
+### Example
+
+```
+marked-directory './test/docs/**/*.md' './test/docsBuild' './test/docs/' './'
+```
+
+### Options
+
+```
+marked-directory [glob to markdown files] [output directory] [path searchValue to replace] [path newValue if found by previous arg]
+```
+
