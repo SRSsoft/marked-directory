@@ -755,13 +755,21 @@ const markedDirectory = (
     replaceWith = '',
   ], {
     logger = console.log, // eslint-disable-line no-console
+    markedOptions, // options for marked
   }
-) => new Promise((resolve, reject) =>
+) => new Promise((resolve, reject) => {
+  if (markedOptions) {
+    marked.setOptions(
+      Object.assign(markedOptions, {
+        renderer: markedOptions.renderer || renderer, // default renderer
+      })
+    );
+  }
   // find all target files
-  glob(input, (err, files) =>
+  return glob(input, (err, files) =>
     (err ? reject(err) : resolve(files))
-  )
-).then(files => new Promise((resolve, reject) =>
+  );
+}).then(files => new Promise((resolve, reject) =>
   // create target files directory
   mkdirp(output, err =>
     (err ? reject(err) : resolve(files))

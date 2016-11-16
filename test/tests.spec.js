@@ -115,4 +115,46 @@ describe('marked-directory', () => {
       });
     })
   );
+
+  it('should transform a directory and remove unnecessary sub directories and sanitize URLs', () =>
+    md(['./test/docs/**/*.md', './test/docsBuild', './test/docs', './'], {
+      markedOptions: {
+        sanitize: true,
+      },
+    }).then(() => {
+      const tree = dirTree('./test/docsBuild');
+      expect(tree).toEqual({
+        path: './test/docsBuild',
+        name: 'docsBuild',
+        children: [
+          {
+            path: 'test/docsBuild/README.htm',
+            name: 'README.htm',
+            size: 10699,
+            extension: '.htm',
+          },
+          {
+            path: 'test/docsBuild/subDirectory',
+            name: 'subDirectory',
+            children: [
+              {
+                path: 'test/docsBuild/subDirectory/page1.htm',
+                name: 'page1.htm',
+                size: 10534,
+                extension: '.htm',
+              },
+              {
+                path: 'test/docsBuild/subDirectory/page2.htm',
+                name: 'page2.htm',
+                size: 10536,
+                extension: '.htm',
+              },
+            ],
+            size: 21070,
+          },
+        ],
+        size: 31769,
+      });
+    })
+  );
 });
