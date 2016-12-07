@@ -1,8 +1,30 @@
 /* eslint-disable no-undef,no-console */
 const expect = require('expect');
-const md = require('../index.js');
+const md = require('../src/index.js');
 const dirTree = require('directory-tree');
 const rimraf = require('rimraf');
+
+/**
+ * recursively removes a property from an object, or objects in an array.
+ */
+const killProp = (obj, prop) => {
+  if (Array.isArray(obj)) {
+    return obj.map(val => killProp(val, prop));
+  } else if ((typeof obj === 'object') && (obj !== null)) {
+    const clone = Object.assign({}, obj);
+
+    Object.keys(clone).forEach((key) => {
+      if (key === prop) {
+        delete clone[key];
+      } else {
+        clone[key] = killProp(clone[key], prop);
+      }
+    });
+
+    return clone;
+  }
+  return obj;
+};
 
 describe('marked-directory', () => {
   afterEach(done =>
@@ -27,7 +49,7 @@ describe('marked-directory', () => {
 
   it('should transform a directory', () =>
     md(['./test/docs/**/*.md', './test/docsBuild']).then(() => {
-      const tree = dirTree('./test/docsBuild');
+      const tree = killProp(dirTree('./test/docsBuild'), 'size');
       expect(tree).toEqual({
         path: './test/docsBuild',
         name: 'docsBuild',
@@ -43,7 +65,6 @@ describe('marked-directory', () => {
                   {
                     path: 'test/docsBuild/test/docs/README.htm',
                     name: 'README.htm',
-                    size: 10699,
                     extension: '.htm',
                   },
                   {
@@ -53,26 +74,20 @@ describe('marked-directory', () => {
                       {
                         path: 'test/docsBuild/test/docs/subDirectory/page1.htm',
                         name: 'page1.htm',
-                        size: 10534,
                         extension: '.htm',
                       },
                       {
                         path: 'test/docsBuild/test/docs/subDirectory/page2.htm',
                         name: 'page2.htm',
-                        size: 10536,
                         extension: '.htm',
                       },
                     ],
-                    size: 21070,
                   },
                 ],
-                size: 31769,
               },
             ],
-            size: 31769,
           },
         ],
-        size: 31769,
       });
     })
   );
@@ -80,7 +95,7 @@ describe('marked-directory', () => {
 
   it('should transform a directory and remove unnecessary sub directories', () =>
     md(['./test/docs/**/*.md', './test/docsBuild', './test/docs', './']).then(() => {
-      const tree = dirTree('./test/docsBuild');
+      const tree = killProp(dirTree('./test/docsBuild'), 'size');
       expect(tree).toEqual({
         path: './test/docsBuild',
         name: 'docsBuild',
@@ -88,7 +103,6 @@ describe('marked-directory', () => {
           {
             path: 'test/docsBuild/README.htm',
             name: 'README.htm',
-            size: 10699,
             extension: '.htm',
           },
           {
@@ -98,20 +112,16 @@ describe('marked-directory', () => {
               {
                 path: 'test/docsBuild/subDirectory/page1.htm',
                 name: 'page1.htm',
-                size: 10534,
                 extension: '.htm',
               },
               {
                 path: 'test/docsBuild/subDirectory/page2.htm',
                 name: 'page2.htm',
-                size: 10536,
                 extension: '.htm',
               },
             ],
-            size: 21070,
           },
         ],
-        size: 31769,
       });
     })
   );
@@ -126,34 +136,34 @@ describe('marked-directory', () => {
       expect(tree).toEqual({
         path: './test/docsBuild',
         name: 'docsBuild',
+        size: 31772,
         children: [
           {
             path: 'test/docsBuild/README.htm',
             name: 'README.htm',
-            size: 10699,
             extension: '.htm',
+            size: 10700,
           },
           {
             path: 'test/docsBuild/subDirectory',
             name: 'subDirectory',
+            size: 21072,
             children: [
               {
                 path: 'test/docsBuild/subDirectory/page1.htm',
                 name: 'page1.htm',
-                size: 10534,
                 extension: '.htm',
+                size: 10535,
               },
               {
                 path: 'test/docsBuild/subDirectory/page2.htm',
                 name: 'page2.htm',
-                size: 10536,
                 extension: '.htm',
+                size: 10537,
               },
             ],
-            size: 21070,
           },
         ],
-        size: 31769,
       });
     })
   );
