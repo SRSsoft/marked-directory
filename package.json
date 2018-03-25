@@ -39,7 +39,7 @@
   "devDependencies": {
     "coveralls": "^3.0.0",
     "cross-env": "^5.0.0",
-    "directory-tree": "^1.1.1",
+    "directory-tree": "^2.1.0",
     "eslint": "^4.1.0",
     "eslint-config-airbnb-base": "^12.0.0",
     "eslint-plugin-import": "^2.6.0",
