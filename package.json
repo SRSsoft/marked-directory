@@ -32,7 +32,7 @@
   "homepage": "https://github.com/SRSsoft/marked-directory#readme",
   "dependencies": {
     "glob": "^7.1.1",
-    "marked": "^0.4.0",
+    "marked": "^0.5.1",
     "memoizee": "^0.4.1",
     "mkdirp": "^0.5.1"
   },
