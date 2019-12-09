@@ -42,7 +42,7 @@
     "directory-tree": "^1.1.1",
     "eslint": "^4.1.0",
     "eslint-config-airbnb-base": "^12.0.0",
-    "eslint-plugin-import": "^2.6.0",
+    "eslint-plugin-import": "^2.19.1",
     "expect": "^22.0.0",
     "istanbul": "^0.4.5",
     "mocha": "^5.0.0",
