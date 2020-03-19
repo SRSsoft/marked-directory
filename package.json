@@ -37,7 +37,7 @@
     "mkdirp": "^0.5.1"
   },
   "devDependencies": {
-    "coveralls": "^3.0.0",
+    "coveralls": "^3.0.11",
     "cross-env": "^6.0.0",
     "directory-tree": "^1.1.1",
     "eslint": "^4.1.0",
